@@ -1,0 +1,12 @@
+name: cohensu3
+title: cohensu3
+username: ajthurston
+account: ajthurston
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12601654
+bundleId: 9060477
+url: https://ajthurston.shinyapps.io/cohensu3/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE

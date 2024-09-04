@@ -1,0 +1,89 @@
+---
+title: "Cohen's u3"
+format: html
+server: shiny
+---
+
+## Overview
+
+This application is designed to communicate effect size Cohen's *d* for non-technical audiences based on [Alliger's (2024) explanation](https://www.doi.org/10.1080/14480220.2024.2397355){target="_blank"} using Cohen's u3. Input the pre-training base rate and training effect size d below to produce the Cohen's u3 value for the post-training improvement in performance.
+
+```{r}
+numericInput(inputId = "base_rate", 
+             label = "Base Rate:",
+             value = .5,
+             min = 0,
+             max = 1)
+numericInput(inputId = "d", 
+             label = "Cohen's d:",
+             value = .53)
+checkboxInput(inputId = "interpret", 
+             label = "Written interpretation:",
+             value = TRUE)
+br()
+textOutput("text")
+```
+
+## Result
+```{r}
+textOutput("text")
+```
+
+```{r}
+#| context: server
+
+nround <- function(values, digits) {
+  factor <- 10^digits
+  is_neg <- ifelse(values < 0, -1, 1)
+  result <- is_neg*floor(abs(values)*factor+.5)/factor
+  return(result)
+}
+
+u3 <- function(base_rate, d, interpret = TRUE) {
+  z_pre  <- qnorm(base_rate)
+  z_post <- z_pre + d
+  pdf_post <- pnorm(z_post)
+  pct_imp <- pdf_post - base_rate
+  pct_scl <- nround(pct_imp*100,0)
+  msg <- paste0("Relative to the pre-training group, the training resulted in a ", pct_scl, "% increase in successful performance.")
+  if (interpret == TRUE) {
+    return(msg)
+  }
+  if (interpret == FALSE)  {
+    return(pct_imp)
+  }
+}
+
+output$text <- renderText({
+    u3(input$base_rate, input$d, input$interpret)
+})
+```
+
+## Code
+
+This is the code for the function above. Note, I added a custom function to round to the nearest integer since this is not the default behavior in R's round() function. It is not required for the u3 function.
+
+```{r}
+#| echo: true
+nround <- function(values, digits) {
+  factor <- 10^digits
+  is_neg <- ifelse(values < 0, -1, 1)
+  result <- is_neg*floor(abs(values)*factor+.5)/factor
+  return(result)
+}
+
+u3 <- function(base_rate, d, interpret = TRUE) {
+  z_pre  <- qnorm(base_rate)
+  z_post <- z_pre + d
+  pdf_post <- pnorm(z_post)
+  pct_imp <- pdf_post - base_rate
+  pct_scl <- nround(pct_imp*100,0)
+  msg <- paste0("Relative to the pre-training group, the training resulted in a ", pct_scl, "% increase in successful performance.")
+  if (interpret == TRUE) {
+    return(msg)
+  }
+  if (interpret == FALSE)  {
+    return(pct_imp)
+  }
+}
+```
