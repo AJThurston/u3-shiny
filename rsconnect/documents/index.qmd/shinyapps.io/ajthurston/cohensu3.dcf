@@ -5,10 +5,10 @@ account: ajthurston
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12601682
-bundleId: 9065679
+bundleId: 9067455
 url: https://ajthurston.shinyapps.io/cohensu3/
 version: 1
-quarto_version: 1.4.555
+quarto_version: 1.5.54
 quarto_engines: knitr
 asMultiple: FALSE
 asStatic: FALSE

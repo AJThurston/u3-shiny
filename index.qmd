@@ -21,14 +21,15 @@ numericInput(inputId = "d",
              value = .53,
              step = .01)
 br()
-checkboxInput(inputId = "interpret", 
-             label = "Written interpretation:",
-             value = TRUE)
+checkboxInput(inputId = "detail", 
+             label = "Detailed output",
+             value = FALSE)
 ```
 
 ## Result
 ```{r}
 textOutput("text")
+verbatimTextOutput("console")
 br()
 plotOutput("plot")
 ```
@@ -41,6 +42,8 @@ library(ggplot2)
 library(tidyverse)
 library(shiny)
 
+## Text explanation render
+
 nround <- function(values, digits) {
   factor <- 10^digits
   is_neg <- ifelse(values < 0, -1, 1)
@@ -48,26 +51,63 @@ nround <- function(values, digits) {
   return(result)
 }
 
-u3 <- function(base_rate, d, interpret = TRUE) {
-  z_pre  <- qnorm(base_rate)
-  z_post <- z_pre + d
+output$text <- renderText({
+
+  z_pre  <- qnorm(input$base_rate)
+  z_post <- z_pre + input$d
   pdf_post <- pnorm(z_post)
-  pct_imp <- pdf_post - base_rate
-  bsr_scl <- nround(base_rate*100,0)
+  pct_imp <- pdf_post - input$base_rate
+  bsr_scl <- nround(input$base_rate*100,0)
   pct_scl <- nround(pct_imp*100,0)
   msg <- paste0("Relative to the pre-training success rate of ", bsr_scl ,"%, successful performance post-training increased ", pct_scl, "%")
-  if (interpret == TRUE) {
-    return(msg)
-  }
-  if (interpret == FALSE)  {
-    return(pct_imp)
-  }
-}
+  return(msg)
 
-output$text <- renderText({
-    u3(input$base_rate, input$d, input$interpret)
 })
 
+## Detailed output render
+
+output$console <- renderText({
+  # Values
+  z_pre  <- qnorm(input$base_rate)
+  z_post <- z_pre + input$d
+  pdf_post <- pnorm(z_post)
+  
+  u2 <- pnorm(input$d/2)
+  u1 <- (2*u2-1)/u2
+  u3 <- pdf_post #Good
+  u3_inc <- pdf_post - input$base_rate #Good
+  r <- input$d/sqrt(input$d^2+4)
+  
+  # Formatting
+  bsr_scl <- nround(input$base_rate*100,0)
+  u1_scl <- nround(u1*100,1)
+  u2_scl <- nround(u2*100,1)
+  u3_scl <- nround(u3*100,1)
+  u3_inc_scl <- nround(u3_inc*100,1)
+  r_scl <- nround(r,3)
+  R2_scl <-  nround(r^2,3)
+  
+  
+  if (input$detail == TRUE)  {
+    return(print(paste0(
+      "\n",
+      "INPUTS\n",
+      "-------------------------------\n",
+      "Pre-training success rate: ", bsr_scl,"%\n",
+      "Cohen's d: ", input$d,"\n\n",
+      "OUTPUTS\n",
+      "-------------------------------\n",
+      "Cohen's U1:  ", u1_scl,"%\n",
+      "Cohen's U2:  ", u2_scl,"%\n",
+      "Cohen's U3:  ", u3_scl,"%\n",
+      "Increase U3: ", u3_inc_scl,"%\n",
+      "Pearson's r: ", r_scl,"\n",
+      "R-squared:   ", R2_scl,"\n"
+      )))
+  }
+})
+
+## Plot Render
 output$plot <- renderPlot({
 
 z_values <- seq(-3, 3, length.out = 100)
