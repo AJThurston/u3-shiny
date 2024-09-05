@@ -98,18 +98,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This application is designed to communicate effect size Cohen’s <em>d</em> for non-technical audiences based on <a href="https://www.doi.org/10.1080/14480220.2024.2397355" target="_blank">Alliger’s (2024) explanation</a> using Cohen’s u3. Input the pre-training base rate and training effect size d below to produce the Cohen’s u3 value for the post-training improvement in performance.</p>
+<p>This application is designed to communicate effect size Cohen’s <em>d</em> for non-technical audiences based on <a href="https://drive.google.com/file/d/1--777v4s9FbWg8gyfZiXwNCfXnkI4MOw/view" target="_blank">Alliger’s (2024) explanation</a> using Cohen’s u3 (<a href="https://www.utstat.toronto.edu/~brunner/oldclass/378f16/readings/CohenPower.pdf" target="_blank">Cohen, 1988, p.&nbsp;20-23</a>). Input the pre-training base rate and training effect size d below to produce the Cohen’s u3 value for the post-training improvement in performance.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="form-group shiny-input-container">
 <label class="control-label" id="base_rate-label" for="base_rate">Pre-Training Success Rate:</label>
-<input id="base_rate" type="number" class="shiny-input-number form-control" value="0.5" min="0" max="1">
+<input id="base_rate" type="number" class="shiny-input-number form-control" value="0.5" min="0" max="1" step="0.01">
 </div>
 </div>
 <div class="cell-output-display">
 <div class="form-group shiny-input-container">
 <label class="control-label" id="d-label" for="d">Cohen's d:</label>
-<input id="d" type="number" class="shiny-input-number form-control" value="0.53">
+<input id="d" type="number" class="shiny-input-number form-control" value="0.53" step="0.01">
 </div>
 </div>
 <div class="cell-output-display">
@@ -167,6 +167,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>  }</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+</section>
+<section id="references" class="level2">
+<h2 class="anchored" data-anchor-id="references">References</h2>
+<p>Alliger, G. M. (2024). How to better communicate the likely effectiveness of proposed training: Interpreting meta-analytic results for (and with) an applied audience. <em>International Journal of Training Research</em>, <em>0</em>(0), 1–8. <a href="https://doi.org/10.1080/14480220.2024.2397355" target="_blank">https://doi.org/10.1080/14480220.2024.2397355</a></p>
+<p>Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum Associates, Publishers.</p>
 <p>
 <script type="application/shiny-prerendered" data-context="server">
 library(ggplot2)

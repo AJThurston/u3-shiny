@@ -6,7 +6,7 @@ server: shiny
 
 ## Overview
 
-This application is designed to communicate effect size Cohen's *d* for non-technical audiences based on [Alliger's (2024) explanation](https://www.doi.org/10.1080/14480220.2024.2397355){target="_blank"} using Cohen's u3. Input the pre-training base rate and training effect size d below to produce the Cohen's u3 value for the post-training improvement in performance.
+This application is designed to communicate effect size Cohen's *d* for non-technical audiences based on [Alliger's (2024) explanation](https://drive.google.com/file/d/1--777v4s9FbWg8gyfZiXwNCfXnkI4MOw/view){target="_blank"} using Cohen's u3 ([Cohen, 1988, p. 20-23](https://www.utstat.toronto.edu/~brunner/oldclass/378f16/readings/CohenPower.pdf){target="_blank"}). Input the pre-training success rate and training effect size d below to produce the Cohen's u3 value for the post-training improvement in performance.
 
 ```{r}
 
@@ -14,10 +14,12 @@ numericInput(inputId = "base_rate",
              label = "Pre-Training Success Rate:",
              value = .5,
              min = 0,
-             max = 1)
+             max = 1,
+             step = .01)
 numericInput(inputId = "d", 
              label = "Cohen's d:",
-             value = .53)
+             value = .53,
+             step = .01)
 br()
 checkboxInput(inputId = "interpret", 
              label = "Written interpretation:",
@@ -163,3 +165,10 @@ u3 <- function(base_rate, d, interpret = TRUE) {
   }
 }
 ```
+
+## References
+
+Alliger, G. M. (2024). How to better communicate the likely effectiveness of proposed training: Interpreting meta-analytic results for (and with) an applied audience. *International Journal of Training Research*, *0*(0), 1–8. [https://doi.org/10.1080/14480220.2024.2397355](https://doi.org/10.1080/14480220.2024.2397355){target="_blank"}
+
+Cohen, J. (1988). *Statistical power analysis for the behavioral sciences* (2nd ed.). Lawrence Erlbaum Associates, Publishers.
+
