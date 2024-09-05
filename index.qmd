@@ -114,26 +114,7 @@ ggplot(data, aes(x = z_values, y = density, fill = group, color = group)) +
     legend.position = "none"
   )
 
-
 })
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ```
 
