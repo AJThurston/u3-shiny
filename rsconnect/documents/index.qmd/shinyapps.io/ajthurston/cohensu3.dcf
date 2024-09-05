@@ -1,14 +1,14 @@
 name: cohensu3
-title: cohensu3
+title: u3-shiny
 username: ajthurston
 account: ajthurston
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 12601682
-bundleId: 9060663
+bundleId: 9063493
 url: https://ajthurston.shinyapps.io/cohensu3/
 version: 1
-quarto_version: 1.5.54
+quarto_version: 1.4.555
 quarto_engines: knitr
 asMultiple: FALSE
 asStatic: FALSE

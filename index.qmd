@@ -9,28 +9,35 @@ server: shiny
 This application is designed to communicate effect size Cohen's *d* for non-technical audiences based on [Alliger's (2024) explanation](https://www.doi.org/10.1080/14480220.2024.2397355){target="_blank"} using Cohen's u3. Input the pre-training base rate and training effect size d below to produce the Cohen's u3 value for the post-training improvement in performance.
 
 ```{r}
+
 numericInput(inputId = "base_rate", 
-             label = "Base Rate:",
+             label = "Pre-Training Success Rate:",
              value = .5,
              min = 0,
              max = 1)
 numericInput(inputId = "d", 
              label = "Cohen's d:",
              value = .53)
+br()
 checkboxInput(inputId = "interpret", 
              label = "Written interpretation:",
              value = TRUE)
-br()
-textOutput("text")
 ```
 
 ## Result
 ```{r}
 textOutput("text")
+br()
+plotOutput("plot")
 ```
 
 ```{r}
 #| context: server
+#| warning: false
+#| message: false
+library(ggplot2)
+library(tidyverse)
+library(shiny)
 
 nround <- function(values, digits) {
   factor <- 10^digits
@@ -44,8 +51,9 @@ u3 <- function(base_rate, d, interpret = TRUE) {
   z_post <- z_pre + d
   pdf_post <- pnorm(z_post)
   pct_imp <- pdf_post - base_rate
+  bsr_scl <- nround(base_rate*100,0)
   pct_scl <- nround(pct_imp*100,0)
-  msg <- paste0("Relative to the pre-training group, the training resulted in a ", pct_scl, "% increase in successful performance.")
+  msg <- paste0("Relative to the pre-training success rate of ", bsr_scl ,"%, successful performance post-training increased ", pct_scl, "%")
   if (interpret == TRUE) {
     return(msg)
   }
@@ -57,6 +65,74 @@ u3 <- function(base_rate, d, interpret = TRUE) {
 output$text <- renderText({
     u3(input$base_rate, input$d, input$interpret)
 })
+
+output$plot <- renderPlot({
+
+z_values <- seq(-3, 3, length.out = 100)
+d_val <- .5
+
+null_dist <- dnorm(z_values)
+alt_dist <- dnorm(z_values - input$d)  # Cohen's d = 0.5 shift
+
+data <- data.frame(
+  z_values = rep(z_values, 2),
+  density = c(null_dist-.01, alt_dist-.01),
+  group = factor(rep(c("H0", "Ha"), each = length(z_values)))
+)
+
+## Data for the annotation layer
+
+z_pre  <- qnorm(input$base_rate)
+z_post <- z_pre + input$d
+pdf_post <- pnorm(z_post)
+
+data_ann <- data.frame(group = factor(c("H0", "Ha")),
+                       labels = c(
+                         paste0("Success rate\npre-training: ", nround(input$base_rate*100, digits = 0), "%"),
+                         paste0("Success rate\npost-training: ", nround(pdf_post*100, digits = 0), "%")
+                       )
+                       )
+
+ggplot(data, aes(x = z_values, y = density, fill = group, color = group)) +
+  geom_ribbon(data = data %>% filter(group == "Ha" & z_values >= qnorm(1-input$base_rate)), # Pass rate in post
+              aes(ymin = 0, ymax = density)) +  # Power region
+  geom_ribbon(data = data %>% filter(group == "H0" & z_values >= qnorm(1-input$base_rate)),
+              aes(ymin = 0, ymax = density)) +  # Base Rate in Pre
+  geom_line(data = data %>% filter(group == "H0"), size = 1) + 
+  geom_line(data = data %>% filter(group == "Ha"), size = 1) + 
+  geom_text(data = data_ann, x = -2, y = .25, aes(label = labels), size = 8) +
+  scale_fill_manual(values = c("#FF7F7F","#336666")) +
+  scale_color_manual(values = c("#FF7F7F","#336666")) +
+  scale_x_continuous(expand = c(0,0), limits = c(-3,3), breaks = c(seq(-3,3, 1))) +
+  scale_y_continuous(expand = c(0,0), limits = c(0,.4)) +
+  facet_grid(rows = "group") +
+  theme_void() +
+  theme(
+    strip.text = element_blank(),
+    legend.position = "none"
+  )
+
+
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 ## Code
