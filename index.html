@@ -68,6 +68,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="index_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="index_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -98,7 +127,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="overview" class="level2">
 <h2 class="anchored" data-anchor-id="overview">Overview</h2>
-<p>This application is designed to communicate effect size Cohen’s <em>d</em> for non-technical audiences based on <a href="https://drive.google.com/file/d/1--777v4s9FbWg8gyfZiXwNCfXnkI4MOw/view" target="_blank">Alliger’s (2024) explanation</a> using Cohen’s u3 (<a href="https://www.utstat.toronto.edu/~brunner/oldclass/378f16/readings/CohenPower.pdf" target="_blank">Cohen, 1988, p.&nbsp;20-23</a>). Input the pre-training success rate and training effect size d below to produce the Cohen’s u3 value for the post-training improvement in performance.</p>
+<p>This application is designed to communicate effect size Cohen’s <span class="math inline">\(d\)</span> for non-technical audiences based on <a href="https://drive.google.com/file/d/1--777v4s9FbWg8gyfZiXwNCfXnkI4MOw/view" target="_blank">Alliger’s (2024) explanation</a> using Cohen’s <span class="math inline">\(U_3\)</span> (<a href="https://www.utstat.toronto.edu/~brunner/oldclass/378f16/readings/CohenPower.pdf" target="_blank">Cohen, 1988, p.&nbsp;20-23</a>). Input the pre-training success rate and training effect size <span class="math inline">\(d\)</span> below to produce the Cohen’s <span class="math inline">\(U_3\)</span> value for the post-training improvement in performance.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="form-group shiny-input-container">
@@ -175,6 +204,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="references">References</h2>
 <p>Alliger, G. M. (2024). How to better communicate the likely effectiveness of proposed training: Interpreting meta-analytic results for (and with) an applied audience. <em>International Journal of Training Research</em>, <em>0</em>(0), 1–8. <a href="https://doi.org/10.1080/14480220.2024.2397355" target="_blank">https://doi.org/10.1080/14480220.2024.2397355</a></p>
 <p>Cohen, J. (1988). <em>Statistical power analysis for the behavioral sciences</em> (2nd ed.). Lawrence Erlbaum Associates, Publishers.</p>
+</section>
+<section id="resources" class="level2">
+<h2 class="anchored" data-anchor-id="resources">Resources</h2>
+<ul>
+<li><a href="https://easystats.github.io/effectsize/reference/p_superiority.html" target="_blank">R package for calculating Cohen’s <span class="math inline">\(U_3\)</span> using raw data</a></li>
+<li><a href="https://rpsychologist.com/cohend/" target="_blank">Kristoffer Magnusson’s description of Cohen’s <span class="math inline">\(d\)</span> and <span class="math inline">\(U_3\)</span></a></li>
+</ul>
 <p>
 <script type="application/shiny-prerendered" data-context="server">
 library(ggplot2)
@@ -269,8 +305,8 @@ pdf_post <- pnorm(z_post)
 
 data_ann <- data.frame(group = factor(c("H0", "Ha")),
                        labels = c(
-                         paste0("Success rate\npre-training: ", nround(input$base_rate*100, digits = 0), "%"),
-                         paste0("Success rate\npost-training: ", nround(pdf_post*100, digits = 0), "%")
+                         paste0("Pre-training\nsuccess rate: ", nround(input$base_rate*100, digits = 0), "%"),
+                         paste0("Post-training\nsuccess rate: ", nround(pdf_post*100, digits = 0), "%")
                        )
                        )
 
@@ -282,8 +318,8 @@ ggplot(data, aes(x = z_values, y = density, fill = group, color = group)) +
   geom_line(data = data %>% filter(group == "H0"), size = 1) + 
   geom_line(data = data %>% filter(group == "Ha"), size = 1) + 
   geom_text(data = data_ann, x = -2, y = .25, aes(label = labels), size = 8) +
-  scale_fill_manual(values = c("#FF7F7F","#336666")) +
-  scale_color_manual(values = c("#FF7F7F","#336666")) +
+  scale_fill_manual(values = c("#336666","#FF7F7F")) +
+  scale_color_manual(values = c("#336666","#FF7F7F")) +
   scale_x_continuous(expand = c(0,0), limits = c(-3,3), breaks = c(seq(-3,3, 1))) +
   scale_y_continuous(expand = c(0,0), limits = c(0,.4)) +
   facet_grid(rows = "group") +
