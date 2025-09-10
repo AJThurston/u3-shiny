@@ -4,9 +4,9 @@ format: html
 server: shiny
 ---
 
-## Overview
-
 This application is designed to communicate effect size Cohen's $d$ for non-technical audiences based on [Alliger's (2024) explanation](https://drive.google.com/file/d/1--777v4s9FbWg8gyfZiXwNCfXnkI4MOw/view){target="_blank"} using Cohen's $U_3$ ([Cohen, 1988, p. 20-23](https://www.utstat.toronto.edu/~brunner/oldclass/378f16/readings/CohenPower.pdf){target="_blank"}). Input the pre-training success rate and training effect size $d$ below to produce the Cohen's $U_3$ value for the post-training improvement in performance.
+
+## Input
 
 ```{r}
 fluidPage(
@@ -51,14 +51,6 @@ fluidPage(
         value = "#336666"
       )
     )
-  ),
-  
-  br(),
-  
-  checkboxInput(
-    inputId = "detail", 
-    label = "Detailed output",
-    value = FALSE
   )
 )
 ```
@@ -66,9 +58,14 @@ fluidPage(
 ## Result
 ```{r}
 textOutput("text")
-verbatimTextOutput("console")
 br()
 plotOutput("plot")
+br()
+```
+
+## Detailed Results
+```{r}
+verbatimTextOutput("console")
 ```
 
 ```{r}
@@ -125,9 +122,7 @@ output$console <- renderText({
   R2_scl <-  nround(r^2,3)
   
   
-  if (input$detail == TRUE)  {
     return(print(paste0(
-      "\n",
       "INPUTS\n",
       "-------------------------------\n",
       "Pre-training success rate: ", bsr_scl,"%\n",
@@ -141,7 +136,7 @@ output$console <- renderText({
       "Pearson's r: ", r_scl,"\n",
       "R-squared:   ", R2_scl,"\n"
       )))
-  }
+
 })
 
 ## Plot Render
